@@ -30,8 +30,6 @@ $DB_PASS = $env['DB_PASS'] ?? '';
 $DB_NAME = $env['DB_NAME'] ?? 'blogdb';
 $DB_PORT = $env['DB_PORT'] ?? 3306;
 
-echo $DB_HOST;
-
 // Create MySQLi connection
 try {
     $conn = new mysqli($DB_HOST, $DB_USER, $DB_PASS, $DB_NAME, $DB_PORT);
