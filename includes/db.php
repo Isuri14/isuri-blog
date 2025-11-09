@@ -27,11 +27,12 @@ if (file_exists($env_file)) {
     error_log("[" . date('Y-m-d H:i:s') . "] Warning: .env file not found, using defaults or system environment variables." . PHP_EOL, 3, __DIR__ . '/../errors/error_log.txt');
 }
 
+
 // Database credentials (priority: .env > system env vars > defaults)
-$DB_HOST = $env['DB_HOST'] ?? getenv('DB_HOST') ?: 'localhost';
-$DB_USER = $env['DB_USER'] ?? getenv('DB_USER') ?: 'root';
-$DB_PASS = $env['DB_PASS'] ?? getenv('DB_PASS') ?: '';
-$DB_NAME = $env['DB_NAME'] ?? getenv('DB_NAME') ?: 'blogdb';
+$DB_HOST = $env['DB_HOST'] ?? getenv('DB_HOST') ?: 'sql12.freesqldatabase.com';
+$DB_USER = $env['DB_USER'] ?? getenv('DB_USER') ?: 'sql12806907';
+$DB_PASS = $env['DB_PASS'] ?? getenv('DB_PASS') ?: '1766xZdFfd';
+$DB_NAME = $env['DB_NAME'] ?? getenv('DB_NAME') ?: 'sql12806907';
 $DB_PORT = $env['DB_PORT'] ?? getenv('DB_PORT') ?: 3306;
 
 // Create MySQLi connection

@@ -74,12 +74,13 @@ header("Referrer-Policy: strict-origin-when-cross-origin"); // Limit referrer le
 // APPLICATION CONSTANTS
 // ============================================
 
+# Database configuration for local development
 define('APP_NAME', env_or_default('APP_NAME', 'BlogWithMe'));
 define('APP_URL', env_or_default('APP_URL', 'http://localhost'));
-define('DB_HOST', env_or_default('DB_HOST', 'localhost'));
-define('DB_USER', env_or_default('DB_USER', 'root'));
-define('DB_PASS', env_or_default('DB_PASS', ''));
-define('DB_NAME', env_or_default('DB_NAME', 'blogdb'));
+define('DB_HOST', env_or_default('DB_HOST', 'sql12.freesqldatabase.com'));
+define('DB_USER', env_or_default('DB_USER', 'sql12806907'));
+define('DB_PASS', env_or_default('DB_PASS', '1766xZdFfd'));
+define('DB_NAME', env_or_default('DB_NAME', 'sql12806907'));
 define('DB_PORT', env_or_default('DB_PORT', 3306));
 define('ENVIRONMENT', env_or_default('ENVIRONMENT', 'development'));
 
