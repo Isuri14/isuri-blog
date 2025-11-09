@@ -5,13 +5,29 @@
  * Features: Session timeout, cookie security, XSS protection
  */
 
-// Load environment variables from .env file
+// ============================================
+// ENVIRONMENT LOADING (supports missing .env)
+// ============================================
+
 $env_file = __DIR__ . '/.env';
-if (!file_exists($env_file)) {
-    die("Critical Error: .env file not found. Please create it with your database credentials.");
+$env = [];
+
+if (file_exists($env_file)) {
+    $env = parse_ini_file($env_file);
+} else {
+    // Log a warning instead of failing
+    $error_log_path = __DIR__ . '/errors/error_log.txt';
+    if (!is_dir(dirname($error_log_path))) {
+        mkdir(dirname($error_log_path), 0775, true);
+    }
+    error_log("[" . date('Y-m-d H:i:s') . "] Warning: .env file not found. Using defaults or system environment variables." . PHP_EOL, 3, $error_log_path);
 }
 
-$env = parse_ini_file($env_file);
+// Helper function to load environment variable with fallback
+function env_or_default($key, $default = null) {
+    global $env;
+    return $env[$key] ?? getenv($key) ?: $default;
+}
 
 // ============================================
 // SESSION SECURITY CONFIGURATION
@@ -24,22 +40,23 @@ ini_set('session.use_only_cookies', 1);
 ini_set('session.cookie_httponly', 1);
 
 // Only send cookie over HTTPS (set to 1 in production)
-ini_set('session.cookie_secure', isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? 1 : 0);
+$secure_cookie = isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? 1 : 0;
+ini_set('session.cookie_secure', $secure_cookie);
 
 // Prevent CSRF attacks
 ini_set('session.cookie_samesite', 'Strict');
 
 // Session lifetime configuration
-$session_lifetime = $env['SESSION_LIFETIME'] ?? 3600; // Default 1 hour
+$session_lifetime = env_or_default('SESSION_LIFETIME', 3600); // Default 1 hour
 ini_set('session.gc_maxlifetime', $session_lifetime);
 
 // Session cookie lifetime
-$cookie_lifetime = $env['COOKIE_LIFETIME'] ?? 604800; // Default 7 days
+$cookie_lifetime = env_or_default('COOKIE_LIFETIME', 604800); // Default 7 days
 session_set_cookie_params([
     'lifetime' => $cookie_lifetime,
     'path' => '/',
     'domain' => $_SERVER['HTTP_HOST'] ?? '',
-    'secure' => isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on',
+    'secure' => $secure_cookie,
     'httponly' => true,
     'samesite' => 'Strict'
 ]);
@@ -48,32 +65,29 @@ session_set_cookie_params([
 // SECURITY HEADERS
 // ============================================
 
-// Prevent MIME type sniffing
-header("X-Content-Type-Options: nosniff");
-
-// Prevent clickjacking attacks
-header("X-Frame-Options: DENY");
-
-// Enable XSS filter in browsers
-header("X-XSS-Protection: 1; mode=block");
-
-// Referrer policy
-header("Referrer-Policy: strict-origin-when-cross-origin");
+header("X-Content-Type-Options: nosniff");            // Prevent MIME sniffing
+header("X-Frame-Options: DENY");                      // Prevent clickjacking
+header("X-XSS-Protection: 1; mode=block");            // Enable XSS protection
+header("Referrer-Policy: strict-origin-when-cross-origin"); // Limit referrer leakage
 
 // ============================================
 // APPLICATION CONSTANTS
 // ============================================
 
-define('APP_NAME', $env['APP_NAME'] ?? 'BlogWithMe');
-define('APP_URL', $env['APP_URL'] ?? 'http://localhost');
-define('DB_HOST', $env['DB_HOST'] ?? 'localhost');
-define('DB_USER', $env['DB_USER'] ?? 'root');
-define('DB_PASS', $env['DB_PASS'] ?? '');
-define('DB_NAME', $env['DB_NAME'] ?? 'blogdb');
-define('DB_PORT', $env['DB_PORT'] ?? 3306);
+define('APP_NAME', env_or_default('APP_NAME', 'BlogWithMe'));
+define('APP_URL', env_or_default('APP_URL', 'http://localhost'));
+define('DB_HOST', env_or_default('DB_HOST', 'localhost'));
+define('DB_USER', env_or_default('DB_USER', 'root'));
+define('DB_PASS', env_or_default('DB_PASS', ''));
+define('DB_NAME', env_or_default('DB_NAME', 'blogdb'));
+define('DB_PORT', env_or_default('DB_PORT', 3306));
+define('ENVIRONMENT', env_or_default('ENVIRONMENT', 'development'));
 
-// Error reporting (disable in production)
-if (defined('ENVIRONMENT') && ENVIRONMENT === 'production') {
+// ============================================
+// ERROR REPORTING
+// ============================================
+
+if (ENVIRONMENT === 'production') {
     ini_set('display_errors', 0);
     error_reporting(0);
 } else {

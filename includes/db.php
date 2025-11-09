@@ -4,31 +4,35 @@
  * Database connection handler
  * 
  * Features:
- * - Loads credentials from .env file
+ * - Loads credentials from .env file (if available)
+ * - Falls back to system environment variables or defaults
  * - Uses MySQLi with error handling
  * - UTF-8 character set support
  * - Connection error logging
  * 
  * Security:
- * - Credentials stored in .env (not in code)
+ * - Credentials stored securely (not hardcoded)
  * - Connection errors logged, not displayed
  */
 
-// Load environment variables
+// Path to .env file
 $env_file = __DIR__ . '/../.env';
 
-if (!file_exists($env_file)) {
-    die("Critical Error: .env file not found. Please create the .env file with your database credentials.");
+// Load .env file if it exists
+$env = [];
+if (file_exists($env_file)) {
+    $env = parse_ini_file($env_file);
+} else {
+    // Log warning (not a fatal error)
+    error_log("[" . date('Y-m-d H:i:s') . "] Warning: .env file not found, using defaults or system environment variables." . PHP_EOL, 3, __DIR__ . '/../errors/error_log.txt');
 }
 
-$env = parse_ini_file($env_file);
-
-// Database credentials from .env
-$DB_HOST = $env['DB_HOST'] ?? 'localhost';
-$DB_USER = $env['DB_USER'] ?? 'root';
-$DB_PASS = $env['DB_PASS'] ?? '';
-$DB_NAME = $env['DB_NAME'] ?? 'blogdb';
-$DB_PORT = $env['DB_PORT'] ?? 3306;
+// Database credentials (priority: .env > system env vars > defaults)
+$DB_HOST = $env['DB_HOST'] ?? getenv('DB_HOST') ?: 'localhost';
+$DB_USER = $env['DB_USER'] ?? getenv('DB_USER') ?: 'root';
+$DB_PASS = $env['DB_PASS'] ?? getenv('DB_PASS') ?: '';
+$DB_NAME = $env['DB_NAME'] ?? getenv('DB_NAME') ?: 'blogdb';
+$DB_PORT = $env['DB_PORT'] ?? getenv('DB_PORT') ?: 3306;
 
 // Create MySQLi connection
 try {
@@ -36,29 +40,23 @@ try {
     
     // Check for connection errors
     if ($conn->connect_error) {
-        // Log error
         $error_msg = "Database connection failed: " . $conn->connect_error;
         error_log("[" . date('Y-m-d H:i:s') . "] " . $error_msg . PHP_EOL, 3, __DIR__ . '/../errors/error_log.txt');
-        
-        // Show user-friendly message
         die("Unable to connect to database. Please try again later.");
     }
     
-    // Set character set to UTF-8 for proper encoding
+    // Set character set to UTF-8
     if (!$conn->set_charset("utf8mb4")) {
         error_log("[" . date('Y-m-d H:i:s') . "] Failed to set UTF-8 charset: " . $conn->error . PHP_EOL, 3, __DIR__ . '/../errors/error_log.txt');
     }
-    
-    // Disable automatic error reporting (we'll handle errors manually)
+
+    // Disable automatic error reporting
     mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
 
-    
 } catch (Exception $e) {
     // Log exception
     $error_msg = "Database connection exception: " . $e->getMessage();
     error_log("[" . date('Y-m-d H:i:s') . "] " . $error_msg . PHP_EOL, 3, __DIR__ . '/../errors/error_log.txt');
-    
-    // Show user-friendly message
     die("Unable to connect to database. Please try again later.");
 }
 
