@@ -1,0 +1,34 @@
+# Environment variables (NEVER commit sensitive data!)
+.env
+
+# Error logs
+errors/
+error_log.txt
+
+# System files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Dependency folders
+node_modules/
+vendor/
+
+# Backup files
+*.zip
+*.bak
+*.tmp
+*.old
+
+# Database dumps
+*.sql
+*.sqlite
+
+# Uploaded files (if you add file upload feature)
+uploads/

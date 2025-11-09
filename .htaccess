@@ -1,0 +1,51 @@
+# Prevent directory browsing
+Options -Indexes
+
+# Default page
+DirectoryIndex index.php
+
+# Protect sensitive files
+<FilesMatch "^\.env$">
+    Order allow,deny
+    Deny from all
+</FilesMatch>
+
+<FilesMatch "^config\.php$">
+    Order allow,deny
+    Deny from all
+</FilesMatch>
+
+# Protect includes directory
+# <DirectoryMatch "^/.*includes">
+#    Order allow,deny
+#    Deny from all
+# </DirectoryMatch>
+
+# Custom error pages (optional)
+ErrorDocument 404 /404.php
+ErrorDocument 500 /500.php
+
+# Security headers (backup if PHP headers don't work)
+<IfModule mod_headers.c>
+    Header set X-Content-Type-Options "nosniff"
+    Header set X-Frame-Options "DENY"
+    Header set X-XSS-Protection "1; mode=block"
+    Header set Referrer-Policy "strict-origin-when-cross-origin"
+</IfModule>
+
+# Disable server signature
+ServerSignature Off
+
+# PHP security settings
+<IfModule mod_php7.c>
+    php_flag display_errors Off
+    php_flag log_errors On
+    php_value error_log /path/to/errors/error_log.txt
+</IfModule>
+
+# Force HTTPS (uncomment in production)
+# <IfModule mod_rewrite.c>
+#     RewriteEngine On
+#     RewriteCond %{HTTPS} off
+#     RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+# </IfModule>
