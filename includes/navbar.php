@@ -4,39 +4,44 @@
  * Modern responsive navbar for BlogWithMe
  */
 ?>
-<nav class="navbar">
-    <div class="nav-container">
+<nav class="navbar" role="navigation">
+  <div class="nav-container">
 
-        <a href="index.php" class="nav-logo">📝 BlogWithMe</a>
+    <!-- Logo -->
+    <a href="index.php" class="nav-logo" aria-label="BlogWithMe Home">📝 BlogWithMe</a>
 
-        <button class="nav-toggle" id="navToggle">☰</button>
+    <!-- Mobile Toggle -->
+    <button class="nav-toggle" id="navToggle" aria-label="Toggle navigation menu" aria-expanded="false">
+      ☰
+    </button>
 
-        <div class="nav-links" id="navMenu">
+    <!-- Nav Menu -->
+    <div class="nav-links" id="navMenu">
 
-            <a href="index.php">Home</a>
+      <a href="index.php">Home</a>
 
-            <?php 
-            if (function_exists('is_logged_in') && is_logged_in()):
-                $username = function_exists('current_username') ? current_username() : 'User';
-            ?>
-                <a href="dashboard.php">My Blogs</a>
-                <a href="create_post.php" class="btn-create">Create Post</a>
-                <span class="nav-user">👤 <?= htmlspecialchars($username) ?></span>
-                <a href="logout.php" class="btn-logout">Logout</a>
+      <?php if (function_exists('is_logged_in') && is_logged_in()):
+          $username = function_exists('current_username') ? current_username() : 'User';
+      ?>
+        <a href="dashboard.php">My Blogs</a>
+        <a href="create_post.php" class="btn-create">Create Post</a>
 
-            <?php else: ?>
-                <a href="login.php" class="btn-login">Login</a>
-                <a href="register.php" class="btn-register">Register</a>
-            <?php endif; ?>
+        <span class="nav-user">👤 <?= htmlspecialchars($username); ?></span>
+        <a href="logout.php" class="btn-logout">Logout</a>
 
-            <!-- Search Form -->
-            <form action="search.php" method="GET" class="nav-search">
-                <input type="text" name="q" placeholder="Search blog posts..." required>
-                <button type="submit">🔍</button>
-            </form>
+      <?php else: ?>
+        <a href="login.php" class="btn-login">Login</a>
+        <a href="register.php" class="btn-register">Register</a>
+      <?php endif; ?>
 
-        </div>
+      <!-- Search Form -->
+      <form action="search.php" method="GET" class="nav-search" role="search">
+        <input type="text" name="q" placeholder="Search..." aria-label="Search posts" required>
+        <button type="submit" aria-label="Search">🔍</button>
+      </form>
+
     </div>
+  </div>
 </nav>
 
 <style>
@@ -46,12 +51,13 @@
     color: #fff;
     padding: 12px 0;
     position: fixed;
-    top: 0; left: 0; right: 0;
+    top: 0;
+    left: 0;
+    right: 0;
     z-index: 1000;
     box-shadow: 0 3px 10px rgba(0,0,0,0.15);
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
-
 .nav-container {
     max-width: 1200px;
     margin: 0 auto;
@@ -59,9 +65,7 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    flex-wrap: wrap;
 }
-
 .nav-logo {
     font-size: 1.7em;
     font-weight: bold;
@@ -71,25 +75,25 @@
 }
 .nav-logo:hover { transform: scale(1.05); }
 
-/* Nav links */
+/* Links */
 .nav-links {
     display: flex;
     gap: 12px;
     align-items: center;
     flex-wrap: wrap;
 }
-
 .nav-links a {
     color: #fff;
     text-decoration: none;
     font-weight: 500;
     padding: 6px 12px;
     border-radius: 6px;
-    transition: background 0.2s;
+    transition: all 0.2s ease-in-out;
     white-space: nowrap;
 }
 .nav-links a:hover { background: rgba(255,255,255,0.2); }
 
+/* User text */
 .nav-user {
     font-weight: 500;
     opacity: 0.9;
@@ -107,7 +111,7 @@
 .btn-login, .btn-register { background: #3b82f6; }
 .btn-login:hover, .btn-register:hover { background: #2563eb; }
 
-/* Mobile toggle */
+/* Mobile Toggle */
 .nav-toggle {
     display: none;
     background: none;
@@ -117,45 +121,45 @@
     cursor: pointer;
 }
 
-/* Search form - equal widths */
+/* Search Bar */
 .nav-search {
     display: flex;
-    height: 36px;
+    align-items: center;
+    background: #fff;
+    border-radius: 25px;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    height: 40px;
+    min-width: 280px;
 }
-
-.nav-search input,
-.nav-search button {
-    width: 150px; /* equal widths */
-}
-
 .nav-search input {
-    padding: 8px 12px;
-    border-radius: 6px 0 0 6px;
+    flex: 1;
+    padding: 10px 20px;
     border: none;
     outline: none;
-    font-size: 0.9em;
-    height: 100%;
+    background: transparent;
+    font-size: 0.95em;
+    color: #333;
 }
+.nav-search input::placeholder { color: #999; }
 
 .nav-search button {
-    padding: 8px 14px;
-    border-radius: 0 6px 6px 0;
+    width: 45px;
+    height: 40px;
     border: none;
-    background: #3b82f6;
+    background: #00bcd4;
     color: #fff;
     cursor: pointer;
-    font-size: 1.1em;
-    transition: background 0.2s;
-    height: 100%;
+    font-size: 1.2em;
+    transition: background 0.3s;
     display: flex;
     align-items: center;
     justify-content: center;
 }
-.nav-search button:hover { background: #2563eb; }
+.nav-search button:hover { background: #00acc1; }
 
-/* Mobile styling */
+/* Mobile */
 @media (max-width: 900px) {
-
     .nav-toggle { display: block; }
 
     .nav-links {
@@ -163,7 +167,8 @@
         flex-direction: column;
         position: absolute;
         top: 60px;
-        left: 0; right: 0;
+        left: 0;
+        right: 0;
         background: linear-gradient(135deg, #667eea, #764ba2);
         padding: 20px;
         gap: 12px;
@@ -171,7 +176,6 @@
         border-bottom-left-radius: 8px;
         border-bottom-right-radius: 8px;
     }
-
     .nav-links.active { display: flex; }
 
     .nav-links a,
@@ -179,27 +183,21 @@
         width: 100%;
         text-align: center;
     }
-
     .nav-search {
         width: 100%;
         margin-top: 8px;
-    }
-
-    .nav-search input {
-        width: 100%;
-        flex: 1;
-    }
-
-    .nav-search button {
-        width: 60px;
+        min-width: auto;
     }
 }
 </style>
 
 <script>
-document.getElementById('navToggle')?.addEventListener('click', () => {
-    document.getElementById('navMenu').classList.toggle('active');
+const toggle = document.getElementById('navToggle');
+const menu = document.getElementById('navMenu');
+
+toggle?.addEventListener('click', () => {
+    menu.classList.toggle('active');
+    const expanded = toggle.getAttribute("aria-expanded") === "true";
+    toggle.setAttribute("aria-expanded", !expanded);
 });
 </script>
-
-    
