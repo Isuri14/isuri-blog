@@ -7,13 +7,10 @@
 <nav class="navbar">
     <div class="nav-container">
 
-        <!-- Logo -->
         <a href="index.php" class="nav-logo">📝 BlogWithMe</a>
 
-        <!-- Mobile Toggle Button -->
         <button class="nav-toggle" id="navToggle">☰</button>
 
-        <!-- Navigation Menu -->
         <div class="nav-links" id="navMenu">
 
             <a href="index.php">Home</a>
@@ -70,11 +67,11 @@
     font-weight: bold;
     text-decoration: none;
     color: #fff;
-    transition: transform 0.2s ease;
+    transition: transform 0.2s;
 }
 .nav-logo:hover { transform: scale(1.05); }
 
-/* Links Area */
+/* Nav links */
 .nav-links {
     display: flex;
     gap: 12px;
@@ -88,7 +85,7 @@
     font-weight: 500;
     padding: 6px 12px;
     border-radius: 6px;
-    transition: all 0.2s ease;
+    transition: background 0.2s;
     white-space: nowrap;
 }
 .nav-links a:hover { background: rgba(255,255,255,0.2); }
@@ -110,7 +107,7 @@
 .btn-login, .btn-register { background: #3b82f6; }
 .btn-login:hover, .btn-register:hover { background: #2563eb; }
 
-/* Toggle Button */
+/* Mobile toggle */
 .nav-toggle {
     display: none;
     background: none;
@@ -120,11 +117,15 @@
     cursor: pointer;
 }
 
-/* Search Form */
+/* Search form - equal widths */
 .nav-search {
     display: flex;
-    align-items: stretch;
     height: 36px;
+}
+
+.nav-search input,
+.nav-search button {
+    width: 150px; /* equal widths */
 }
 
 .nav-search input {
@@ -132,7 +133,6 @@
     border-radius: 6px 0 0 6px;
     border: none;
     outline: none;
-    min-width: 200px;
     font-size: 0.9em;
     height: 100%;
 }
@@ -150,7 +150,6 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    min-width: 45px;
 }
 .nav-search button:hover { background: #2563eb; }
 
@@ -187,8 +186,12 @@
     }
 
     .nav-search input {
+        width: 100%;
         flex: 1;
-        min-width: auto;
+    }
+
+    .nav-search button {
+        width: 60px;
     }
 }
 </style>
@@ -198,3 +201,4 @@ document.getElementById('navToggle')?.addEventListener('click', () => {
     document.getElementById('navMenu').classList.toggle('active');
 });
 </script>
+
