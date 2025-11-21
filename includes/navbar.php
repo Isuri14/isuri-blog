@@ -5,100 +5,99 @@
  */
 ?>
 <nav class="navbar">
-  <div class="nav-container">
-    
-    <!-- Logo -->
-    <a href="index.php" class="nav-logo">📝 BlogWithMe</a>
+    <div class="nav-container">
 
-    <!-- Mobile Toggle -->
-    <button class="nav-toggle" id="navToggle">☰</button>
+        <!-- Logo -->
+        <a href="index.php" class="nav-logo">📝 BlogWithMe</a>
 
-    <!-- Navigation Links -->
-    <div class="nav-links" id="navMenu">
+        <!-- Mobile Toggle Button -->
+        <button class="nav-toggle" id="navToggle">☰</button>
 
-      <a href="index.php">Home</a>
+        <!-- Navigation Menu -->
+        <div class="nav-links" id="navMenu">
 
-      <?php 
-      if (function_exists('is_logged_in') && is_logged_in()):
-          $username = function_exists('current_username') ? current_username() : 'User';
-      ?>
-          <a href="dashboard.php">My Blogs</a>
-          <a href="create_post.php" class="btn-create">Create Post</a>
-          <span class="nav-user">👤 <?= htmlspecialchars($username) ?></span>
-          <a href="logout.php" class="btn-logout">Logout</a>
+            <a href="index.php">Home</a>
 
-      <?php else: ?>
-          <a href="login.php" class="btn-login">Login</a>
-          <a href="register.php" class="btn-register">Register</a>
-      <?php endif; ?>
+            <?php 
+            if (function_exists('is_logged_in') && is_logged_in()):
+                $username = function_exists('current_username') ? current_username() : 'User';
+            ?>
+                <a href="dashboard.php">My Blogs</a>
+                <a href="create_post.php" class="btn-create">Create Post</a>
+                <span class="nav-user">👤 <?= htmlspecialchars($username) ?></span>
+                <a href="logout.php" class="btn-logout">Logout</a>
 
-      <!-- Search Form -->
-      <form action="search.php" method="GET" class="nav-search">
-        <input type="text" name="q" placeholder="Search blog posts..." required>
-        <button type="submit">🔍</button>
-      </form>
+            <?php else: ?>
+                <a href="login.php" class="btn-login">Login</a>
+                <a href="register.php" class="btn-register">Register</a>
+            <?php endif; ?>
 
+            <!-- Search Form -->
+            <form action="search.php" method="GET" class="nav-search">
+                <input type="text" name="q" placeholder="Search blog posts..." required>
+                <button type="submit">🔍</button>
+            </form>
+
+        </div>
     </div>
-  </div>
 </nav>
 
 <style>
-/* Navbar Base */
+/* Navbar styling */
 .navbar {
-  background: linear-gradient(135deg, #667eea, #764ba2);
-  color: #fff;
-  padding: 12px 0;
-  position: fixed;
-  top: 0; left: 0; right: 0;
-  z-index: 1000;
-  box-shadow: 0 3px 10px rgba(0,0,0,0.15);
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    color: #fff;
+    padding: 12px 0;
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 1000;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.15);
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
 .nav-container {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 0 20px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  flex-wrap: wrap;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
 }
 
 .nav-logo {
-  font-size: 1.7em;
-  font-weight: bold;
-  text-decoration: none;
-  color: #fff;
-  transition: transform 0.2s;
+    font-size: 1.7em;
+    font-weight: bold;
+    text-decoration: none;
+    color: #fff;
+    transition: transform 0.2s ease;
 }
 .nav-logo:hover { transform: scale(1.05); }
 
+/* Links Area */
 .nav-links {
-  display: flex;
-  gap: 12px;
-  align-items: center;
-  flex-wrap: wrap;
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    flex-wrap: wrap;
 }
 
 .nav-links a {
-  color: #fff;
-  text-decoration: none;
-  font-weight: 500;
-  padding: 6px 12px;
-  border-radius: 6px;
-  transition: all 0.2s ease-in-out;
-  white-space: nowrap;
+    color: #fff;
+    text-decoration: none;
+    font-weight: 500;
+    padding: 6px 12px;
+    border-radius: 6px;
+    transition: all 0.2s ease;
+    white-space: nowrap;
 }
-.nav-links a:hover {
-  background: rgba(255,255,255,0.2);
-}
+.nav-links a:hover { background: rgba(255,255,255,0.2); }
 
 .nav-user {
-  font-weight: 500;
-  opacity: 0.9;
-  padding: 6px 12px;
-  white-space: nowrap;
+    font-weight: 500;
+    opacity: 0.9;
+    padding: 6px 12px;
+    white-space: nowrap;
 }
 
 /* Buttons */
@@ -111,87 +110,91 @@
 .btn-login, .btn-register { background: #3b82f6; }
 .btn-login:hover, .btn-register:hover { background: #2563eb; }
 
-/* Mobile Toggle */
+/* Toggle Button */
 .nav-toggle {
-  display: none;
-  background: none;
-  border: none;
-  font-size: 1.7em;
-  color: #fff;
-  cursor: pointer;
+    display: none;
+    background: none;
+    border: none;
+    font-size: 1.7em;
+    color: #fff;
+    cursor: pointer;
 }
 
-/* Search Bar */
+/* Search Form */
 .nav-search {
-  display: flex;
-  align-items: center;
+    display: flex;
+    align-items: stretch;
+    height: 36px;
 }
 
 .nav-search input {
-  padding: 6px 10px;
-  border-radius: 6px 0 0 6px;
-  border: none;
-  outline: none;
-  min-width: 180px;
-  font-size: 0.9em;
+    padding: 8px 12px;
+    border-radius: 6px 0 0 6px;
+    border: none;
+    outline: none;
+    min-width: 200px;
+    font-size: 0.9em;
+    height: 100%;
 }
 
 .nav-search button {
-  padding: 6px 12px;
-  border: none;
-  border-radius: 0 6px 6px 0;
-  background: #3b82f6;
-  color: #fff;
-  cursor: pointer;
-  font-size: 1em;
-  transition: background 0.2s;
+    padding: 8px 14px;
+    border-radius: 0 6px 6px 0;
+    border: none;
+    background: #3b82f6;
+    color: #fff;
+    cursor: pointer;
+    font-size: 1.1em;
+    transition: background 0.2s;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 45px;
 }
+.nav-search button:hover { background: #2563eb; }
 
-.nav-search button:hover {
-  background: #2563eb;
-}
-
-/* Mobile */
+/* Mobile styling */
 @media (max-width: 900px) {
-  .nav-toggle { display: block; }
 
-  .nav-links {
-    display: none;
-    flex-direction: column;
-    position: absolute;
-    top: 60px;
-    left: 0; right: 0;
-    background: linear-gradient(135deg, #667eea, #764ba2);
-    padding: 20px;
-    gap: 12px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.25);
-    border-bottom-left-radius: 8px;
-    border-bottom-right-radius: 8px;
-  }
+    .nav-toggle { display: block; }
 
-  .nav-links.active { display: flex; }
+    .nav-links {
+        display: none;
+        flex-direction: column;
+        position: absolute;
+        top: 60px;
+        left: 0; right: 0;
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        padding: 20px;
+        gap: 12px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.25);
+        border-bottom-left-radius: 8px;
+        border-bottom-right-radius: 8px;
+    }
 
-  .nav-links a,
-  .nav-user {
-    width: 100%;
-    text-align: center;
-  }
+    .nav-links.active { display: flex; }
 
-  .nav-search {
-    width: 100%;
-    margin-top: 8px;
-  }
+    .nav-links a,
+    .nav-user {
+        width: 100%;
+        text-align: center;
+    }
 
-  .nav-search input {
-    flex: 1;
-    min-width: auto;
-  }
+    .nav-search {
+        width: 100%;
+        margin-top: 8px;
+    }
+
+    .nav-search input {
+        flex: 1;
+        min-width: auto;
+    }
 }
 </style>
 
 <script>
 document.getElementById('navToggle')?.addEventListener('click', () => {
-  document.getElementById('navMenu').classList.toggle('active');
+    document.getElementById('navMenu').classList.toggle('active');
 });
 </script>
-
