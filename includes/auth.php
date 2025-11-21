@@ -4,6 +4,7 @@
  * Enhanced authentication with session timeout
  */
 
+// Load config BEFORE starting session (critical!)
 require_once __DIR__ . '/../config.php';
 
 // Start session if not already started
@@ -13,12 +14,14 @@ if (session_status() === PHP_SESSION_NONE) {
 
 // Check session timeout
 if (isset($_SESSION['LAST_ACTIVITY'])) {
-    $session_lifetime = ini_get('session.gc_maxlifetime');
+    $session_lifetime = 3600; // 1 hour
     if (time() - $_SESSION['LAST_ACTIVITY'] > $session_lifetime) {
         // Session expired
         session_unset();
         session_destroy();
-        header("Location: login.php?timeout=1");
+        session_start(); // Start new session
+        $_SESSION['error_message'] = "Your session has expired. Please login again.";
+        header("Location: login.php");
         exit();
     }
 }
@@ -28,7 +31,7 @@ $_SESSION['LAST_ACTIVITY'] = time();
  * Check if user is logged in
  */
 function is_logged_in() {
-    return isset($_SESSION['user_id']);
+    return isset($_SESSION['user_id']) && !empty($_SESSION['user_id']);
 }
 
 /**
@@ -36,11 +39,9 @@ function is_logged_in() {
  */
 function require_login() {
     if (!is_logged_in()) {
-        $protocol = isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? 'https' : 'http';
-        $host = $_SERVER['HTTP_HOST'];
-        $path = dirname($_SERVER['PHP_SELF']);
-        header("Location: {$protocol}://{$host}{$path}/login.php");
-        exit;
+        $_SESSION['error_message'] = "Please login to access this page.";
+        header("Location: login.php");
+        exit();
     }
 }
 
@@ -55,29 +56,15 @@ function current_user_id() {
  * Get current username
  */
 function current_username() {
-    return $_SESSION['username'] ?? null;
+    return $_SESSION['username'] ?? 'Guest';
 }
 
 /**
- * Set remember me cookie
+ * Logout user
  */
-function set_remember_me_cookie($user_id) {
-    $token = bin2hex(random_bytes(32));
-    $expiry = time() + (30 * 24 * 60 * 60); // 30 days
-    
-    setcookie('remember_token', $token, [
-        'expires' => $expiry,
-        'path' => '/',
-        'secure' => isset($_SERVER['HTTPS']),
-        'httponly' => true,
-        'samesite' => 'Strict'
-    ]);
-
-    // Optionally, store token in database for verification
-    // Example:
-    // $conn = new mysqli(DB_HOST, DB_USER, DB_PASS, DB_NAME, DB_PORT);
-    // $stmt = $conn->prepare("UPDATE user SET remember_token = ? WHERE id = ?");
-    // $stmt->bind_param("si", $token, $user_id);
-    // $stmt->execute();
-    // $stmt->close();
+function logout_user() {
+    session_unset();
+    session_destroy();
+    header("Location: login.php");
+    exit();
 }
