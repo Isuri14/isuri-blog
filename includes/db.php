@@ -24,7 +24,7 @@ if (file_exists($env_file)) {
     $env = parse_ini_file($env_file);
 } else {
     // Log warning (not a fatal error)
-    error_log("[" . date('Y-m-d H:i:s') . "] Warning: .env file not found, using defaults or system environment variables." . PHP_EOL, 3, __DIR__ . '/../errors/error_log.txt');
+    //error_log("[" . date('Y-m-d H:i:s') . "] Warning: .env file not found, using defaults or system environment variables." . PHP_EOL, 3, __DIR__ . '/../errors/error_log.txt');
 }
 
 
