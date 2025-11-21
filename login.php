@@ -3,20 +3,15 @@
  * login.php — User login page
  */
 
-ini_set('display_errors', 1);
-ini_set('display_startup_errors', 1);
-error_reporting(E_ALL);
-
-session_start();
-
 require_once __DIR__ . '/includes/db.php';
+require_once __DIR__ . '/includes/auth.php'; // This loads config.php and starts session
 require_once __DIR__ . '/includes/functions.php';
 
 $error_message = '';
 $old_email = '';
 
 // If already logged in, redirect to dashboard/home
-if (isset($_SESSION['user_id'])) {
+if (is_logged_in()) {
     header("Location: index.php");
     exit();
 }
@@ -44,9 +39,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     $user = $result->fetch_assoc();
 
                     if (password_verify($password, $user['password'])) {
+                        // Clear any old session data
+                        session_regenerate_id(true);
+                        
+                        // Set session variables
                         $_SESSION['user_id'] = $user['id'];
                         $_SESSION['username'] = $user['username'];
-                        session_regenerate_id(true);
+                        $_SESSION['LAST_ACTIVITY'] = time();
+                        
+                        // Force session write
+                        session_write_close();
+                        
+                        // Redirect
                         header("Location: index.php");
                         exit();
                     } else {
@@ -93,23 +97,30 @@ input[type="email"], input[type="password"] {
     border: 1px solid #ccc;
     border-radius: 6px;
     font-size: 1em;
+    box-sizing: border-box;
+}
+label {
+    display: block;
+    font-weight: 500;
+    margin-bottom: 5px;
 }
 button.btn {
     width: 100%;
-    padding: 10px;
+    padding: 12px;
     background: #3b82f6;
     color: #fff;
     border: none;
     border-radius: 6px;
     font-size: 1em;
+    font-weight: 500;
     cursor: pointer;
     transition: background 0.2s;
 }
 button.btn:hover {
     background: #2563eb;
 }
-p { text-align: center; font-size: 0.95em; }
-p a { color: #3b82f6; text-decoration: none; }
+p { text-align: center; font-size: 0.95em; margin-top: 20px; }
+p a { color: #3b82f6; text-decoration: none; font-weight: 500; }
 p a:hover { text-decoration: underline; }
 </style>
 </head>
@@ -126,11 +137,11 @@ p a:hover { text-decoration: underline; }
         <?php endif; ?>
 
         <form method="POST" action="">
-            <label>Email:</label>
-            <input type="email" name="email" value="<?= htmlspecialchars($old_email); ?>" required>
+            <label for="email">Email:</label>
+            <input type="email" id="email" name="email" value="<?= htmlspecialchars($old_email); ?>" required autocomplete="email">
 
-            <label>Password:</label>
-            <input type="password" name="password" required>
+            <label for="password">Password:</label>
+            <input type="password" id="password" name="password" required autocomplete="current-password">
 
             <button type="submit" class="btn">Login</button>
         </form>
