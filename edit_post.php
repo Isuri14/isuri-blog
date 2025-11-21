@@ -1,18 +1,4 @@
 <?php
-/**
- * edit_post.php — Edit blog post with image update
- * 
- * Features:
- * - Update title and content
- * - Update/replace existing image
- * - Remove image option
- * - Keep old image if no new upload
- * - Delete old image when replacing
- * 
- * @author K.H.I. Hansani
- * @student_id 235043E
- */
-
 require_once __DIR__ . '/includes/db.php';
 require_once __DIR__ . '/includes/auth.php';
 require_once __DIR__ . '/includes/functions.php';
@@ -30,19 +16,45 @@ $user_message = '';
 
 // Fetch existing blog post
 try {
-    $stmt = $conn->prepare("SELECT id, user_id, title, content, image FROM blogPost WHERE id = ? AND user_id = ?");
+    $stmt = $conn->prepare("SELECT id, user_id, title, content, image FROM blogpost WHERE id = ? AND user_id = ?");
     if (!$stmt) throw new Exception("Prepare failed: " . $conn->error);
     $stmt->bind_param("ii", $blog_id, $user_id);
     $stmt->execute();
     $res = $stmt->get_result();
     if ($res->num_rows === 0) {
-        throw new Exception("Blog not found or no permission to edit.");
+        $user_message = "Blog not found or you don't have permission to edit it.";
+        $stmt->close();
+    } else {
+        $blog = $res->fetch_assoc();
+        $stmt->close();
     }
-    $blog = $res->fetch_assoc();
-    $stmt->close();
 } catch (Exception $e) {
     log_error("Edit Blog Load Error (id={$blog_id}, user_id={$user_id}): " . $e->getMessage());
-    echo "<p>Something went wrong. Please try again later.</p>";
+    $user_message = "Error loading blog: " . $e->getMessage();
+}
+
+// If blog not found, show error
+if (empty($blog)) {
+    ?>
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Error | BlogWithMe</title>
+        <link rel="stylesheet" href="assets/css/styles.css">
+    </head>
+    <body>
+        <?php include __DIR__ . '/includes/navbar.php'; ?>
+        <div class="container" style="margin-top: 100px; text-align: center;">
+            <h2>Error</h2>
+            <p style="color: red;"><?= htmlspecialchars($user_message); ?></p>
+            <a href="dashboard.php" class="btn">Go to Dashboard</a>
+        </div>
+        <?php include __DIR__ . '/includes/footer.php'; ?>
+    </body>
+    </html>
+    <?php
     exit();
 }
 
@@ -95,7 +107,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit'])) {
                         $upload_path = $upload_dir . $new_image_filename;
                         
                         if (!is_dir($upload_dir)) {
-                            mkdir($upload_dir, 0777, true);
+                            mkdir($upload_dir, 0755, true);
                         }
                         
                         if (move_uploaded_file($file['tmp_name'], $upload_path)) {
@@ -121,12 +133,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit'])) {
         // ============================================
         if (empty($user_message)) {
             try {
-                $update_stmt = $conn->prepare("UPDATE blogPost SET title = ?, content = ?, image = ? WHERE id = ? AND user_id = ?");
-                if (!$update_stmt) throw new Exception("Prepare failed: " . $conn->error);
+                $update_stmt = $conn->prepare("UPDATE blogpost SET title = ?, content = ?, image = ? WHERE id = ? AND user_id = ?");
+                if (!$update_stmt) {
+                    throw new Exception("Prepare failed: " . $conn->error);
+                }
                 $update_stmt->bind_param("sssii", $title, $content, $new_image, $blog_id, $user_id);
 
                 if ($update_stmt->execute()) {
                     $update_stmt->close();
+                    $_SESSION['success_message'] = "✅ Blog post updated successfully!";
                     header("Location: dashboard.php");
                     exit();
                 } else {
@@ -134,7 +149,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit'])) {
                 }
             } catch (Exception $e) {
                 log_error("Edit Blog Update Error (id={$blog_id}, user_id={$user_id}): " . $e->getMessage());
-                $user_message = "Something went wrong. Please try again later.";
+                $user_message = "⚠️ Database error: " . $e->getMessage();
             }
         }
     }
@@ -343,19 +358,23 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit'])) {
                 document.getElementById('imagePreview').style.display = 'block';
                 
                 // Uncheck remove image if user uploads new one
-                document.getElementById('removeImage')?.checked = false;
+                const removeCheckbox = document.getElementById('removeImage');
+                if (removeCheckbox) removeCheckbox.checked = false;
             };
             reader.readAsDataURL(file);
         }
     });
 
     // Hide new image preview if user checks remove image
-    document.getElementById('removeImage')?.addEventListener('change', function() {
-        if (this.checked) {
-            document.getElementById('imageInput').value = '';
-            document.getElementById('imagePreview').style.display = 'none';
-        }
-    });
+    const removeImageCheckbox = document.getElementById('removeImage');
+    if (removeImageCheckbox) {
+        removeImageCheckbox.addEventListener('change', function() {
+            if (this.checked) {
+                document.getElementById('imageInput').value = '';
+                document.getElementById('imagePreview').style.display = 'none';
+            }
+        });
+    }
     </script>
 
 </body>
